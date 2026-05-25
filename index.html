@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Tủ lạnh thông minh — quản lý món ăn trong tủ lạnh, gợi ý bữa ăn hằng ngày." />
+  <meta name="theme-color" content="#D97757" />
+  <title>Tủ lạnh của tôi · Quản lý món ăn</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Bỏ qua đến nội dung chính</a>
+
+  <header class="app-header">
+    <div class="container header-inner">
+      <a href="#" class="brand" aria-label="Trang chủ Tủ lạnh của tôi">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2.5" />
+            <line x1="5" y1="10" x2="19" y2="10" />
+            <line x1="9" y1="6" x2="9" y2="7.5" />
+            <line x1="9" y1="14" x2="9" y2="16" />
+          </svg>
+        </span>
+        <span class="brand-text">
+          <span class="brand-title">Tủ lạnh của tôi</span>
+          <span class="brand-sub">Quản lý món ăn thông minh</span>
+        </span>
+      </a>
+
+      <div class="header-actions">
+        <button id="btn-firebase" class="fb-btn" type="button" title="Kết nối Firebase" aria-label="Kết nối Firebase">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <ellipse cx="12" cy="5" rx="9" ry="3" />
+            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3" />
+            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5" />
+          </svg>
+          <span class="fb-dot" aria-hidden="true"></span>
+        </button>
+
+        <button id="btn-add-food" class="btn btn-primary" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          <span>Thêm món</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="container main-content">
+    <!-- Hero / dashboard summary -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-text">
+        <p class="eyebrow" id="today-label">Đang tải...</p>
+        <h1 id="hero-title" class="hero-title">Hôm nay <span class="accent">ăn gì</span> trong tủ lạnh?</h1>
+        <p class="hero-desc">Quản lý các món đã chuẩn bị sẵn, biết món nào cần ăn trước, lên kế hoạch bữa ăn dễ dàng hơn mỗi ngày.</p>
+      </div>
+
+      <div class="stats" role="list">
+        <div class="stat-card" role="listitem">
+          <span class="stat-icon" aria-hidden="true">📦</span>
+          <div>
+            <p class="stat-label">Tổng số món</p>
+            <p class="stat-value" id="stat-total">0</p>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <span class="stat-icon" aria-hidden="true">🏷️</span>
+          <div>
+            <p class="stat-label">Nhóm món</p>
+            <p class="stat-value" id="stat-categories">0</p>
+          </div>
+        </div>
+        <div class="stat-card" role="listitem">
+          <span class="stat-icon" aria-hidden="true">⏳</span>
+          <div>
+            <p class="stat-label">Lưu lâu nhất</p>
+            <p class="stat-value" id="stat-oldest">—</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Suggestions -->
+    <section class="suggest-section" aria-labelledby="suggest-title">
+      <div class="section-head">
+        <h2 id="suggest-title" class="section-title">
+          <span class="title-icon" aria-hidden="true">✨</span>
+          Gợi ý cho hôm nay
+        </h2>
+        <p class="section-sub">Ưu tiên những món đã lưu lâu, nên ăn trước để giữ độ ngon.</p>
+      </div>
+      <div id="suggest-list" class="suggest-list" role="list">
+        <!-- Suggestions render here -->
+      </div>
+    </section>
+
+    <!-- Toolbar: search, filter, sort -->
+    <section class="toolbar" aria-label="Bộ lọc và tìm kiếm">
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+        <input id="search-input" class="search-input" type="search" placeholder="Tìm món ăn..." aria-label="Tìm món ăn theo tên" />
+      </div>
+
+      <div class="sort-wrap">
+        <label for="sort-select" class="sr-only">Sắp xếp</label>
+        <select id="sort-select" class="select">
+          <option value="oldest">Cũ nhất trước</option>
+          <option value="newest">Mới nhất trước</option>
+          <option value="name-asc">Tên A → Z</option>
+          <option value="name-desc">Tên Z → A</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Category chips -->
+    <nav id="chip-list" class="chip-list" aria-label="Lọc theo nhóm món">
+      <!-- chips render here -->
+    </nav>
+
+    <!-- Food grid -->
+    <section aria-labelledby="list-title">
+      <div class="section-head between">
+        <h2 id="list-title" class="section-title">
+          <span class="title-icon" aria-hidden="true">🥘</span>
+          Tất cả món ăn
+        </h2>
+        <p id="list-count" class="section-sub">0 món</p>
+      </div>
+      <div id="food-grid" class="food-grid">
+        <!-- Cards render here -->
+      </div>
+
+      <div id="empty-state" class="empty-state" hidden>
+        <div class="empty-illu" aria-hidden="true">🍽️</div>
+        <h3 id="empty-title">Không tìm thấy món nào</h3>
+        <p id="empty-msg">Hãy thử thay đổi từ khoá hoặc bộ lọc, hoặc thêm món ăn mới vào tủ lạnh.</p>
+        <button id="empty-action" class="btn btn-primary" type="button" data-action="open-add">Thêm món mới</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal: Add / Edit -->
+  <div id="modal" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-head">
+        <h2 id="modal-title" class="modal-title">Thêm món ăn</h2>
+        <button class="icon-btn" type="button" data-close aria-label="Đóng">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="food-form" class="modal-body" novalidate>
+        <input type="hidden" name="id" />
+
+        <div class="field">
+          <label for="f-name">Tên món <span class="req">*</span></label>
+          <input id="f-name" name="name" type="text" required placeholder="VD: Thịt kho tàu" maxlength="80" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-category">Nhóm món <span class="req">*</span></label>
+            <select id="f-category" name="category" required></select>
+          </div>
+          <div class="field">
+            <label for="f-emoji">Biểu tượng</label>
+            <input id="f-emoji" name="emoji" type="text" maxlength="3" placeholder="🍖" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label for="f-quantity">Số lượng</label>
+            <input id="f-quantity" name="quantity" type="text" placeholder="VD: 1 hộp, 500g..." maxlength="40" />
+          </div>
+          <div class="field">
+            <label for="f-date">Ngày lưu <span class="req">*</span></label>
+            <input id="f-date" name="savedDate" type="date" required />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="f-notes">Ghi chú</label>
+          <textarea id="f-notes" name="notes" rows="3" placeholder="Cách dùng, lưu ý, hạn sử dụng..." maxlength="240"></textarea>
+        </div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-close>Huỷ</button>
+          <button type="submit" class="btn btn-primary">Lưu món</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Confirm dialog -->
+  <div id="confirm" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-close-confirm></div>
+    <div class="modal-dialog modal-sm" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-body confirm-body">
+        <div class="confirm-icon" aria-hidden="true">🗑️</div>
+        <h3 id="confirm-title">Xoá món ăn?</h3>
+        <p id="confirm-msg">Bạn có chắc chắn muốn xoá món này khỏi tủ lạnh không?</p>
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-close-confirm>Huỷ</button>
+          <button type="button" class="btn btn-danger" id="confirm-ok">Xoá</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Firebase connect -->
+  <div id="fb-modal" class="modal" hidden aria-hidden="true">
+    <div class="modal-backdrop" data-fb-close></div>
+    <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="fb-modal-title">
+      <div class="modal-head">
+        <h2 id="fb-modal-title" class="modal-title">Kết nối Firebase</h2>
+        <button class="icon-btn" type="button" data-fb-close aria-label="Đóng">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+      </div>
+
+      <form id="fb-form" class="modal-body" novalidate>
+        <p class="fb-help">
+          Dán Firebase config từ <strong>Firebase Console → Project Settings → Your apps</strong>.
+          Hỗ trợ cả định dạng JS object lẫn JSON. Đảm bảo <strong>Firestore</strong> đã bật và rules cho phép đọc/ghi.
+        </p>
+
+        <div class="field">
+          <label for="fb-config">Firebase Config <span class="req">*</span></label>
+          <textarea id="fb-config" name="config" rows="10" required spellcheck="false"
+            placeholder='{&#10;  apiKey: "...",&#10;  authDomain: "...",&#10;  projectId: "...",&#10;  ...&#10;}'></textarea>
+        </div>
+
+        <div id="fb-error" class="fb-error" hidden></div>
+
+        <div class="modal-foot">
+          <button type="button" class="btn btn-ghost" data-fb-close>Huỷ</button>
+          <button type="submit" class="btn btn-primary" id="fb-connect-btn">Kết nối</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="js/app.js" type="module"></script>
+</body>
+</html>
